@@ -367,7 +367,6 @@ obj
 .vscode/
 
 # these can be changed on developer workstations
-**/appsettings.Development.json
 **/appsettings.IntegrationTests.json
 appsettings.IntegrationTests.json
 *coverage.json

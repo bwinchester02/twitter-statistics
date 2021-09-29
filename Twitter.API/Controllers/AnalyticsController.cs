@@ -22,7 +22,7 @@ namespace Twitter.API.Controllers
         /// Get the total number of tweets currently consumed.
         /// </summary>
         /// <returns>Returns the total number of tweets currently consumed.</returns>
-        [HttpGet("count")]
+        [HttpGet("tweet/total")]
         public IActionResult GetTotalTweetCount()
         {
             try
@@ -40,12 +40,30 @@ namespace Twitter.API.Controllers
         /// Get the average number of tweets consumed per minute.
         /// </summary>
         /// <returns>Returns the average number of tweets consumed per minute.</returns>
-        [HttpGet("average")]
+        [HttpGet("tweet/count")]
         public IActionResult GetAverageTweetCount()
         {
             try
             {
                 return StatusCode(StatusCodes.Status200OK, _manager.GetAverageTweetsPerMinute());
+            }
+            catch (Exception)
+            {
+                // TODO: Log the exception
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get the average number of tweets consumed per minute.
+        /// </summary>
+        /// <returns>Returns the average number of tweets consumed per minute.</returns>
+        [HttpGet("tweet/length")]
+        public IActionResult GetAverageTweetLength()
+        {
+            try
+            {
+                return StatusCode(StatusCodes.Status200OK, _manager.GetAverageTweetLength());
             }
             catch (Exception)
             {

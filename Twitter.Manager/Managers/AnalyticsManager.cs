@@ -22,6 +22,12 @@ namespace Twitter.Manager.Managers
         /// </summary>
         /// <returns>Returns the average number of tweets consumed per minute.</returns>
         public double GetAverageTweetsPerMinute();
+
+        /// <summary>
+        /// Get the average length of a tweet.
+        /// </summary>
+        /// <returns>Returns the average length of a tweet.</returns>
+        public double GetAverageTweetLength();
     }
 
     public class AnalyticsManager : IAnalyticsManager
@@ -57,6 +63,13 @@ namespace Twitter.Manager.Managers
                 }).Average(ad => ad.Count);
 
             return average;
+        }
+
+        /// <inheritdoc/>
+        public double GetAverageTweetLength()
+        {
+            List<TweetMetaData> tweets = GetTweetsFromCache();
+            return tweets.Average(tmd => tmd.Text.Length);
         }
 
         /// <summary>
