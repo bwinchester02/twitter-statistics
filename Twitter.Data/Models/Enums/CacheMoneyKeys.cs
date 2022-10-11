@@ -16,5 +16,16 @@ namespace Twitter.Data.Models.Enums
                 return "Tweets";
             }
         }
+
+        /// <summary>
+        /// They Key for our Hashtag object in cache.
+        /// </summary>
+        public static string Hashtags
+        {
+            get
+            {
+                return "Hashtags";
+            }
+        }
     }
 }

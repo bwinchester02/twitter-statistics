@@ -76,5 +76,52 @@ namespace Twiter.Manager.UnitTest
             double average = (tweets.FirstOrDefault().Text.Length + tweets.LastOrDefault().Text.Length) / 2;
             Assert.AreEqual(average, manager.GetAverageTweetLength());
         }
+
+
+        /// <summary>
+        /// Test Hashtags returning Top 10.
+        /// </summary>
+        [TestMethod]
+        public void TestHashTags()
+        {
+            IMemoryCache cache = new MemoryCache(new MemoryCacheOptions());
+            List<TweetMetaData> tweets = new List<TweetMetaData>();
+            Dictionary<string, int> hashtags = new Dictionary<string, int>();
+            List<string> expectedHashTagOrder = new List<string>() { "#jackhenry", "#applyToday", "#sustainability", "#teamwork" };
+            /* Number of hastag occurences
+             * 1. jackhenry - 3
+             * 2. applyToday - 2
+             * 3. sustainability - 1
+             * 4. teamwork - 1
+             */
+            tweets.Add(TweetMetaDataFactory.Generate("at Jack Henry™, we believe in people. #jackhenry #applyToday"));
+            tweets.Add(TweetMetaDataFactory.Generate("Jack Henry’s Sustainability Report includes highlights from each of Jack Henry's BIGs #jackhenry #sustainability"));
+            tweets.Add(TweetMetaDataFactory.Generate("We Also Believe We Are Better Together #jackhenry #teamwork #applyToday"));
+
+            foreach(TweetMetaData tweet in tweets)
+            {
+                if (tweet.HashTags.Any())
+                {
+                    foreach (string hashtag in tweet.HashTags)
+                    {
+                        if (hashtags.ContainsKey(hashtag))
+                        {
+                            hashtags[hashtag] = hashtags[hashtag] + 1;
+                        }
+                        else
+                        {
+                            hashtags.Add(hashtag, 1);
+                        }
+                    }
+
+                    
+                }
+            }
+
+            cache.Set(CacheMoneyKeys.Hashtags, hashtags);
+            AnalyticsManager manager = new AnalyticsManager(cache);
+
+            CollectionAssert.AreEqual(expectedHashTagOrder, manager.GetTopTenHashTags());
+        }
     }
 }

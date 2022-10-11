@@ -32,7 +32,7 @@ namespace Twitter.API.Controllers
         /// </summary>
         /// <returns>Returns a success status code if succesful.</returns>
         [HttpGet("twitter")]
-        public IActionResult GetAverageTweetCount()
+        public IActionResult GetTwitterHealth()
         {
             if (_manager.InterfaceWithTwitter().Result)
             {

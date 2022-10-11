@@ -2,10 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Runtime;
 using Twitter.Data.Models;
-using Newtonsoft.Json;
+using Twitter.Data.Models.Enums;
 
 namespace Twitter.Manager.Managers
 {
@@ -28,6 +26,12 @@ namespace Twitter.Manager.Managers
         /// </summary>
         /// <returns>Returns the average length of a tweet.</returns>
         public double GetAverageTweetLength();
+
+        /// <summary>
+        /// Get the top 10 hashtags used in tweets.
+        /// </summary>
+        /// <returns>Returns the top 10 hashtags used in tweets.</returns>
+        public List<string> GetTopTenHashTags();
     }
 
     public class AnalyticsManager : IAnalyticsManager
@@ -72,6 +76,30 @@ namespace Twitter.Manager.Managers
             return tweets.Average(tmd => tmd.Text.Length);
         }
 
+        /// <inheritdoc/>
+        public List<string> GetTopTenHashTags()
+        {
+            Dictionary<string, int> hashtags = GetHashtagsFromCache();
+            IOrderedEnumerable<KeyValuePair<string, int>> sortedHashtags = from entry in hashtags orderby entry.Value descending select entry;
+            return sortedHashtags.Take(10).ToDictionary(x => x.Key, x => x.Value).Keys.ToList();
+        }
+
+        /// <summary>
+        /// Gets the hashtags object out of the cache and returns a copy of it.
+        /// </summary>
+        /// <returns>Return a copy of the collection of Hashtags.</returns>
+        private Dictionary<string, int> GetHashtagsFromCache()
+        {
+            Dictionary<string, int> hashtags;
+            if (!_cache.TryGetValue(CacheMoneyKeys.Hashtags, out hashtags))
+            {
+                //Log some exception because tweets object isn't instantiated
+                throw new Exception("Hashtag object isn't instantiated in memory yet.");
+            }
+
+            return hashtags;
+        }
+
         /// <summary>
         /// Gets the tweets object out of the cache and returns a copy of it.
         /// </summary>
@@ -79,7 +107,7 @@ namespace Twitter.Manager.Managers
         private List<TweetMetaData> GetTweetsFromCache()
         {
             List<TweetMetaData> tweets;
-            if (!_cache.TryGetValue("Tweets", out tweets))
+            if (!_cache.TryGetValue(CacheMoneyKeys.Tweets, out tweets))
             {
                 //Log some exception because tweets object isn't instantiated
                 throw new Exception("Tweets object isn't instantiated in memory yet.");

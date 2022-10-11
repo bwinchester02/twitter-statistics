@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using Twitter.Data.Models;
 using Twitter.Data.Models.Config;
@@ -14,7 +15,8 @@ namespace Twitter.Manager.Services
     {
         public static async void ProcessTwitterStream(TwitterConfig twitterConfig, IMemoryCache cache)
         {
-            List<TweetMetaData> tweets = new List<TweetMetaData>();
+            List<TweetMetaData> tweets;
+            Dictionary<string, int> hashtags;
             string data;
 
             #region source sited: https://stackoverflow.com/questions/1081860/reading-data-from-an-open-http-stream
@@ -38,6 +40,24 @@ namespace Twitter.Manager.Services
                                 tweets = (List<TweetMetaData>)cache.Get(CacheMoneyKeys.Tweets);
                                 tweets.Add(tweet);
                                 cache.Set(CacheMoneyKeys.Tweets, tweets);
+
+                                if (tweet.HashTags.Any())
+                                {
+                                    hashtags = (Dictionary<string, int>)cache.Get(CacheMoneyKeys.Hashtags);
+                                    foreach (string hashtag in tweet.HashTags)
+                                    {
+                                        if (hashtags.ContainsKey(hashtag))
+                                        {
+                                            hashtags[hashtag] = hashtags[hashtag] + 1;
+                                        }
+                                        else
+                                        {
+                                            hashtags.Add(hashtag, 1);
+                                        }
+                                    }
+
+                                    cache.Set(CacheMoneyKeys.Hashtags, hashtags);
+                                }
                             }
                         }
                     }
@@ -55,6 +75,7 @@ namespace Twitter.Manager.Services
         public static void InstantiateCache(IMemoryCache cache)
         {
             cache.Set(CacheMoneyKeys.Tweets, new List<TweetMetaData>());
+            cache.Set(CacheMoneyKeys.Hashtags, new Dictionary<string, int>());
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Twitter.Data.Models
 {
@@ -53,6 +55,21 @@ namespace Twitter.Data.Models
             get
             {
                 return CreatedAt.ToString("MMddyyyyHHmm");
+            }
+        }
+
+        public List<string> HashTags
+        {
+            get
+            {
+                List<string> hashTags = new List<string>();
+                MatchCollection tags = Regex.Matches(Text, @"#(\w+)");
+                foreach (Match tag in tags)
+                {
+                    hashTags.Add(tag.ToString());
+                }
+
+                return hashTags;
             }
         }
     }

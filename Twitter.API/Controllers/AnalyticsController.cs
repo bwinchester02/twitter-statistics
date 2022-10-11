@@ -71,5 +71,23 @@ namespace Twitter.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
+
+        /// <summary>
+        /// Get the top 10 hashtags used in tweets in descending order.
+        /// </summary>
+        /// <returns>Returns the top 10 hashtags used in tweets.</returns>
+        [HttpGet("hashtag/top")]
+        public IActionResult GetTopTenHashTags()
+        {
+            try
+            {
+                return StatusCode(StatusCodes.Status200OK, _manager.GetTopTenHashTags());
+            }
+            catch (Exception)
+            {
+                // TODO: Log the exception
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
     }
 }
